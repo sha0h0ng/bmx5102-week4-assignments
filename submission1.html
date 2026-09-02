@@ -128,7 +128,7 @@ footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
   <h1>The Promise Olist Can Keep</h1>
   <p class="byline">Peh Shao Hong (A0077294U)</p>
   <div class="meta">
-    <span><b>Stakeholder</b> Head of Operations, Olist, presenting to the CEO, CFO and Chief Commercial Officer before Black Friday 2018</span>
+    <span><b>Stakeholder</b> Head of Operations, Olist, presenting to the CEO, CFO and Chief Commercial Officer</span>
     <span><b>Dataset</b> 99,441 orders &middot; 3,095 sellers &middot; Sept 2016 &ndash; Oct 2018, of which Jan 2017 &ndash; Aug 2018 is usable</span>
     <span><b>Joined to</b> an event calendar, Open-Meteo weather, BrasilAPI holidays, ANP diesel prices, IBGE boundaries, SEC filings</span>
   </div>
@@ -176,7 +176,7 @@ footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
   <div class="qhead"><div class="qnum">0</div><h2>First, does the data hold up?</h2></div>
   <p class="qkind">The checks that have to pass before any chart on this page means anything.</p>
   <div class="stepnote">
-    <p>Nine files, one marketplace, two years. Every order is a row with five timestamps: purchase, approval, hand-off to the carrier, delivery to the customer, and the date the customer was promised. Reliability on this page is measured from those five fields, so it is worth knowing where they are silent.</p>
+    <p>Nine Olist files, one marketplace, two years, and seven external sources pulled in as the questions demanded them. Every order is a row with five timestamps: purchase, approval, hand-off to the carrier, delivery to the customer, and the date the customer was promised. Reliability on this page is measured from those five fields, so it is worth knowing where they are silent, and what was joined to them.</p>
     <p class="steph">What is in the files</p>
     <div class="dtwrap"><table class="dtable">
       <thead><tr><th>File</th><th class="num">Rows</th><th class="num">Columns</th><th>What one row is</th></tr></thead>
@@ -191,6 +191,18 @@ footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
         <tr><td>olist_products_dataset.csv</td><td class="num">32,951</td><td class="num">9</td><td>one product, with category and dimensions</td></tr>
         <tr><td>product_category_name_translation.csv</td><td class="num">71</td><td class="num">2</td><td>one category name, Portuguese to English</td></tr>
       </tbody></table></div>
+    <p class="steph">External sources brought in, and where each is used</p>
+    <div class="dtwrap"><table class="dtable">
+      <thead><tr><th>File</th><th class="num">Rows</th><th class="num">Columns</th><th>What one row is</th><th>Source</th><th>Used in</th></tr></thead>
+      <tbody>
+        <tr><td>event calendar</td><td class="num">6</td><td class="num">4</td><td>one event, its dates, its source and what it should look like in the data; supplied as context, written down before testing</td><td>Ebit/Webshoppers via PagBrasil, CEP-Research, Labsnews</td><td>Q1, Q4</td></tr>
+        <tr><td>weather_by_state.csv</td><td class="num">9,120</td><td class="num">5</td><td>one day in one of twelve state capitals: precipitation, rain, maximum temperature; Sept 2016 to Sept 2018</td><td>Open-Meteo historical archive API</td><td>Q4</td></tr>
+        <tr><td>holidays_br_national.csv</td><td class="num">39</td><td class="num">4</td><td>one national holiday, 2016 to 2018</td><td>BrasilAPI</td><td>Q1, Q3</td></tr>
+        <tr><td>anp_diesel_weekly_by_state.csv</td><td class="num">6,588</td><td class="num">7</td><td>one state, one week, one diesel grade: mean pump price and stations surveyed; Sept 2016 to Dec 2018</td><td>ANP weekly price survey, state spreadsheet</td><td>Q4</td></tr>
+        <tr><td>brazil_states.geojson</td><td class="num">27</td><td class="num">&ndash;</td><td>one state boundary polygon</td><td>IBGE malhas API</td><td>Q3, Q4, Q5 maps</td></tr>
+        <tr><td>competition_and_strategy_facts.csv</td><td class="num">30</td><td class="num">5</td><td>one fact about Mercado Livre or Olist, with its date, value and a source URL</td><td>SEC filings, Q4 2018 earnings call, Brazilian press</td><td>What to do next</td></tr>
+        <tr><td>Correios service standards</td><td class="num">2</td><td class="num">&ndash;</td><td>the published ceiling for PAC and SEDEX in working days; the 2018 route-level tables are not archived, so this is a placeholder</td><td>Correios, via Olist&rsquo;s shipping guide</td><td>Q3</td></tr>
+      </tbody></table></div>
     <p class="steph">Integrity checks, all passing</p>
     <ul class="checks">
       <li>Every order id is unique, and every order&rsquo;s customer id resolves to a customer</li>
@@ -199,6 +211,10 @@ footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
       <li>Order status is one of eight values; 97% are <b>delivered</b>, the rest shipped, cancelled, unavailable, invoiced, processing, created or approved</li>
       <li>Purchase dates run 4 Sept 2016 to 17 Oct 2018; the last delivery is 17 Oct 2018</li>
       <li>All 27 states appear on both the seller and the customer side</li>
+      <li>Weather: 760 days for each of 12 capitals, no gaps; those 12 states hold 93.5% of delivered orders</li>
+      <li>Diesel: every one of the 27 states present in every survey week; the strike week is flagged by ANP as an 85% drop in stations with fuel</li>
+      <li>Boundaries: 27 polygons, one per state, matched to the two-letter codes used in the Olist files</li>
+      <li>Every fact in the strategy file carries a source URL, and every figure quoted on this page was read from that source</li>
     </ul>
     <p class="steph">What the checks found, and what was done</p>
     <ul class="caveats">
