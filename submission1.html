@@ -6,6 +6,7 @@
 <title>The Promise Olist Can Keep</title>
 <meta name="description" content="BMX5102 Week 4: how reliably Olist's delivery network performs, in five questions, with charts, maps and the external data that was tested and ruled out.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;700&family=Public+Sans:wght@400;500;600&display=swap">
+
 <style>
 :root{
   color-scheme:light;
@@ -17,7 +18,8 @@
   --note-bg:#efeada; --note-brd:#d8cfae; --note-ink:#786321;
   --aside-bg:#e6efe9; --aside-line:#12674a; --aside-ink:#0f5138;
   --step-bg:#e4ecf5; --step-line:#1d5390; --step-ink:#17416f; --step-rule:#c8d7e7;
-  --chip-static:#a8377a; --chip-ink:#ffffff; --wash:rgba(20,24,28,.055);
+  --chip-static:#a8377a; --chip-live:#5b3fa8; --chip-ink:#ffffff; --wash:rgba(20,24,28,.055);
+  --aside-btn:#12674a; --aside-btn-ink:#ffffff;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--plane); color:var(--ink); font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:var(--fs-base); line-height:1.5; -webkit-font-smoothing:antialiased}
@@ -116,6 +118,46 @@ footer{border-top:2px solid var(--ink); padding-top:20px; margin-top:8px; font-s
 footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
 @media (min-width:1120px){ footer{columns:2; column-gap:52px} footer p{break-inside:avoid-column} }
 @media (max-width:640px){ .wrap{padding:32px 16px 64px} .qkind{padding-left:0} .mastrow{flex-direction:column} }
+
+/* interactive layer ------------------------------------------------------- */
+.rchip{font-size:var(--fs-sm); font-weight:600; letter-spacing:.015em; white-space:nowrap; padding:4px 10px; color:var(--chip-ink); background:var(--chip-static)}
+.rchip.live{background:var(--chip-live)}
+.cardhead .ctl{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.ghost.tbl[aria-pressed="true"]{background:var(--ink); color:var(--plane); border-color:var(--ink)}
+.legend{display:flex; gap:14px; flex-wrap:wrap; align-items:center; font-size:var(--fs-sm); color:var(--ink-2); padding:6px 0 2px}
+.legend .k{display:inline-flex; align-items:center; gap:7px; border:0; background:transparent; color:var(--ink-2); font:inherit; font-size:var(--fs-sm); padding:2px 4px; cursor:default}
+.legend button.k{cursor:pointer} .legend button.k[aria-pressed="false"]{opacity:.38; text-decoration:line-through}
+.legend .k i{width:10px; height:10px; flex:none; display:inline-block}
+.seg{display:inline-flex; border:1px solid var(--rule); overflow:hidden; flex-wrap:wrap}
+.seg button{border:0; background:transparent; color:var(--ink-2); cursor:pointer; font:inherit; font-size:var(--fs-sm); padding:5px 12px; white-space:nowrap}
+.seg button+button{border-left:1px solid var(--rule)} .seg button:hover{background:var(--wash); color:var(--ink)}
+.seg.swatch button[aria-pressed="true"]{background:var(--wash); color:var(--ink); font-weight:600} .seg.swatch button[aria-pressed="false"]{opacity:.5}
+.seg.swatch button i{width:9px; height:9px; display:inline-block; margin-right:7px; vertical-align:.5px}
+.plot{padding:4px 0 6px} .plot.off{display:none}
+.plot .panel{margin:0 0 6px} .plot .half{display:inline-block; width:49.5%; vertical-align:top} .plot .third{display:inline-block; width:33%; vertical-align:top}
+.plot .wide{display:inline-block; width:59%; vertical-align:top} .plot .narrow{display:inline-block; width:40%; vertical-align:top}
+.plot .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:0 12px} .plot .grid4 .ptitle{min-height:2.6em}
+@media (max-width:900px){ .plot .half,.plot .third,.plot .wide,.plot .narrow{display:block; width:100%} .plot .grid4{grid-template-columns:repeat(2,1fr)} }
+.ptitle{font-size:var(--fs-sm); font-weight:600; color:var(--ink); margin:6px 0 2px}
+.note{font-size:var(--fs-sm); color:var(--ink-3); margin:4px 0 0}
+.tip{position:absolute; z-index:6; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--inset); border:1px solid var(--ink); padding:8px 11px; font-size:var(--fs-sm); min-width:130px; line-height:1.4}
+.tip .t{font-weight:600; margin-bottom:3px; color:var(--ink)} .tip .r{display:flex; justify-content:space-between; gap:16px; color:var(--ink-2)} .tip .r b{font-weight:600; font-variant-numeric:tabular-nums; color:var(--ink)}
+.tip .r.sum{border-top:1px solid var(--rule); margin-top:4px; padding-top:4px}
+.tableview{display:none; max-height:440px; overflow:auto; padding:0 0 14px} .tableview.on{display:block}
+.tableview table{border-collapse:collapse; font-size:var(--fs-sm); width:100%}
+.tableview th,.tableview td{text-align:right; padding:5px 12px 5px 0; border-bottom:1px solid var(--rule); white-space:nowrap}
+.tableview th:first-child,.tableview td:first-child{text-align:left}
+.tableview thead th{position:sticky; top:0; background:var(--plane); color:var(--ink-2); font-weight:600; border-bottom:1px solid var(--ink)}
+.tableview td{font-variant-numeric:tabular-nums; color:var(--ink-2)}
+details.card.twin{border-top:0; margin-top:6px}
+details.card.twin > summary.cardhead{cursor:pointer; list-style:none; align-items:center; background:var(--aside-bg); border-left:3px solid var(--aside-line); padding:13px 16px; margin:0; transition:background .15s ease}
+details.card.twin > summary.cardhead::-webkit-details-marker{display:none}
+details.card.twin > summary.cardhead .ctitle{color:var(--aside-ink)} details.card.twin > summary.cardhead:hover{border-left-width:6px; padding-left:13px}
+details[open].card.twin > summary.cardhead{margin-bottom:2px}
+.disc{border:0; background:var(--aside-btn); color:var(--aside-btn-ink); padding:7px 15px; font-size:var(--fs-sm); font-weight:600; white-space:nowrap; user-select:none}
+.disc::before{content:"Show chart"} details[open] .disc::before{content:"Hide chart"}
+.disc .chev{display:inline-block; margin-left:7px; transition:transform .18s ease} details[open] .disc .chev{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){ .disc .chev, details.card.twin > summary.cardhead{transition:none} }
 </style>
 </head>
 <body>
@@ -659,5 +701,6 @@ footer p{margin:0 0 .6em; max-width:104ch} footer b{color:var(--ink-2)}
   <p><b>What this cannot say.</b> There is no carrier name and no split between line-haul and last mile. Reviews attach to orders, not delivery events. The event calendar does not cover February to March 2018, and neither do weather, diesel, holidays or volume. Marketplace seller-rating rules are not joined, so Question 5 is unpriced. The data ends in August 2018; the forward view comes from the recommendation, not the five questions.</p>
 </footer>
 </div>
+
 </body>
 </html>

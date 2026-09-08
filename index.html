@@ -1,0 +1,121 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Olist delivery reliability · BMX5102 Week 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light;
+  --fs-sm:13px;--fs-base:16px;--fs-md:18px;--fs-lg:22px;--fs-xl:28px;--fs-2xl:36px;--fs-3xl:58px;
+  --plane:#eef1f4;--inset:#e2e8ed;--rule:#d1d9e0;--axis:#b4bec7;
+  --ink:#14181c;--ink-2:#46505a;--ink-3:#7c8792;--sub:#2a78d6;--cas:#e34948;
+  --hl:#fbe89a;--rec:#c1272d;--violet:#5b3fa8;--orange:#eb6834;
+  --wash:rgba(20,24,28,.055);}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:var(--fs-base);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Chivo,system-ui,sans-serif;margin:0;letter-spacing:-.022em;line-height:1.12;font-weight:600}
+p{margin:0}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:56px 28px 80px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+mark{background:var(--hl);padding:.06em .18em}
+b,strong{font-weight:600;color:var(--ink)}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:26px}
+.masthead h1{font-family:Chivo,system-ui,sans-serif;font-weight:700;font-size:clamp(34px,5.2vw,var(--fs-3xl));letter-spacing:-.036em;margin:14px 0 0}
+.masthead .deck{font-size:var(--fs-md);color:var(--ink-2);margin-top:18px;line-height:1.5;max-width:78ch}
+.masthead .meta{display:flex;flex-wrap:wrap;gap:6px 38px;margin-top:22px;font-size:var(--fs-sm);color:var(--ink-3)}
+.masthead .meta b{color:var(--ink-2)}
+
+.obj{margin:30px 0 6px;padding:22px 26px;background:#f7f3e2;border-top:1px solid #d8cfae;border-bottom:1px solid #d8cfae}
+.obj .eyebrow{color:#6b5716;margin-bottom:9px}
+.obj p{font-family:Chivo,system-ui,sans-serif;font-weight:600;font-size:var(--fs-lg);line-height:1.32;letter-spacing:-.016em}
+
+.rows{margin-top:16px}
+.row{display:grid;grid-template-columns:74px minmax(0,1fr) 250px;gap:0 30px;align-items:start;
+  border-bottom:1px solid var(--rule);padding:30px 0;text-decoration:none;position:relative}
+.row:first-child{border-top:1px solid var(--rule)}
+.row:hover{background:var(--wash)}
+.row:hover h2{color:var(--cas)}
+.num{font-family:Chivo,system-ui,sans-serif;font-weight:700;font-size:34px;color:var(--axis);letter-spacing:-.03em;line-height:1;padding-top:2px}
+.row:hover .num{color:var(--cas)}
+.main .kind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:9px}
+.main h2{font-size:var(--fs-xl);transition:color .12s}
+.main .say{color:var(--ink-2);margin-top:11px;line-height:1.55;max-width:66ch}
+.main .use{margin-top:12px;font-size:var(--fs-sm);color:var(--ink-3)}
+.main .use b{color:var(--ink-2)}
+.side{padding-top:4px}
+.facts{display:grid;gap:7px;font-size:var(--fs-sm);color:var(--ink-2)}
+.facts div{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dotted var(--rule);padding-bottom:5px}
+.facts b{font-variant-numeric:tabular-nums;color:var(--ink)}
+.go{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-family:Chivo,system-ui,sans-serif;
+  font-weight:600;font-size:var(--fs-sm);color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:2px}
+.row:hover .go{color:var(--cas);border-color:var(--cas)}
+
+@media(max-width:860px){.row{grid-template-columns:52px 1fr}.side{grid-column:1/-1;padding-top:16px}}
+footer{margin-top:34px;border-top:1px solid var(--rule);padding-top:18px;font-size:var(--fs-sm);color:var(--ink-3);line-height:1.6}
+</style></head><body>
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">BMX5102 Business Analytics · Week 4 in-class assignment</p>
+    <h1>Olist delivery reliability</h1>
+    <p class="deck">Four ways into one analysis of 96,203 delivered Brazilian e-commerce orders,
+    January 2017 to August 2018. Same data, same five questions, four different jobs: the full sweep, the argument,
+    the deck, and the map.</p>
+    <div class="meta">
+      <span><b>Peh Shao Hong</b> (A0077294U)</span>
+      <span><b>Role</b> Head of Operations, Olist, presenting to the CEO, CFO and Chief Commercial Officer</span>
+      <span><b>Dataset</b> Olist Brazilian e-commerce, Kaggle</span>
+    </div>
+  </header>
+
+  <div class="obj">
+    <p class="eyebrow">Research objective</p>
+    <p>To understand how reliably Olist's delivery network performs as demand rises and shifts across the country,
+    in order to decide what delivery standard Olist can commit to as it scales.</p>
+  </div>
+
+  <div class="rows"><a class="row" href="submission1.html">
+  <div class="num">01</div>
+  <div class="main">
+    <p class="kind">First pass · static</p>
+    <h2>The full sweep</h2>
+    <p class="say">Every question answered in the order it was written, with thirty matplotlib charts and the working shown. Nothing is hidden and nothing is compressed: this is the version that maps the territory.</p>
+    <p class="use"><b>Read this one if</b> you want to see everything that was looked at, including the lines of enquiry that led nowhere.</p>
+  </div>
+  <div class="side"><div class="facts"><div><span>Figures</span><b>30</b></div><div><span>Charts</span><b>static</b></div><div><span>Size</span><b>1.9 MB</b></div></div><span class="go">Open submission1.html &rarr;</span></div>
+</a><a class="row" href="submission2.html">
+  <div class="num">02</div>
+  <div class="main">
+    <p class="kind">Second pass · interactive</p>
+    <h2>The argument</h2>
+    <p class="say">The same evidence rebuilt around a decision. Sixteen interactive D3 figures, each with its own controls, reordered so the question that prices everything comes first and the recommendation is priced from where the business actually stands. <mark>The headline: +12.6 days of expected date to hold 95% on every corridor.</mark></p>
+    <p class="use"><b>Read this one if</b> you want the case as it would be put to a CEO. This is the main submission.</p>
+  </div>
+  <div class="side"><div class="facts"><div><span>Figures</span><b>16</b></div><div><span>Charts</span><b>interactive</b></div><div><span>Size</span><b>0.2 MB</b></div></div><span class="go">Open submission2.html &rarr;</span></div>
+</a><a class="row" href="slides.html">
+  <div class="num">03</div>
+  <div class="main">
+    <p class="kind">Presentation</p>
+    <h2>The deck</h2>
+    <p class="say">Twenty-five slides cut from the same analysis, one idea to a page. The charts are live rather than screenshots, so every toggle still works while you are presenting. Arrow keys move, <b>f</b> is full screen, Ctrl-P prints one slide per page.</p>
+    <p class="use"><b>Read this one if</b> you are presenting this to a room rather than sending it to be read.</p>
+  </div>
+  <div class="side"><div class="facts"><div><span>Slides</span><b>25</b></div><div><span>Charts</span><b>live</b></div><div><span>Size</span><b>0.2 MB</b></div></div><span class="go">Open slides.html &rarr;</span></div>
+</a><a class="row" href="companion.html">
+  <div class="num">04</div>
+  <div class="main">
+    <p class="kind">Companion</p>
+    <h2>The map, moving</h2>
+    <p class="say">Every corridor Olist shipped on, animated month by month. Each streak is a bundle of orders leaving a seller's state for a customer's state, red if it arrived after the date the customer was shown. Press play, or let the guided run stop on the five months that matter.</p>
+    <p class="use"><b>Read this one if</b> you want to see the shape of the network and watch February 2018 turn the whole country red at once.</p>
+  </div>
+  <div class="side"><div class="facts"><div><span>Months</span><b>20</b></div><div><span>Corridor-months</span><b>3,700</b></div><div><span>Size</span><b>0.3 MB</b></div></div><span class="go">Open companion.html &rarr;</span></div>
+</a></div>
+
+  <footer>
+    <p><b>Data.</b> The nine Olist CSV files from Kaggle joined on order, customer, seller and zip prefix: 96,203 delivered
+    orders over purchase months January 2017 to August 2018, plus six external sources listed in Step 0 of each piece.</p>
+  </footer>
+</div>
+</body></html>
