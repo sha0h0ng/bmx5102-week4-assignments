@@ -46,8 +46,8 @@ b,strong{font-weight:600;color:var(--ink)}
 /* ---------- figures ---------- */
 .fig{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
 .ctl{display:flex;flex-wrap:wrap;gap:7px 16px;align-items:center;margin-bottom:8px;flex:none}
-.plot{flex:0 1 auto;min-height:0;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:6px}
-.plot svg{flex:0 1 auto;min-height:0;width:100%;height:auto;max-height:100%}
+.plot{flex:1;min-height:0;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:6px}
+.plot svg{flex:1;min-height:0;width:100%;height:100%}
 .plot>.legend,.plot>.note{flex:none;margin:0}
 .plot .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:0 18px;min-height:0}
 .plot .col{min-width:0;display:flex;flex-direction:column}
@@ -58,8 +58,6 @@ figcaption b{color:var(--ink)}
 
 .brief{flex-direction:column;gap:14px}
 .brief .fig{flex:1;min-height:0;justify-content:flex-start}
-.brief .plot{flex:1;min-height:0}
-.brief .plot svg{flex:1;min-height:0;height:100%;max-height:none}
 .brief figcaption{display:none}
 .strip{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:0 34px;border-top:1px solid var(--rule);padding-top:13px}
 .strip .pt{position:relative;padding-left:19px;font-size:13.5px;color:var(--ink-2);line-height:1.45}
@@ -134,7 +132,7 @@ figcaption b{color:var(--ink)}
 .seg button{border:0;border-right:1px solid var(--rule);background:transparent;color:var(--ink-2);font:inherit;font-size:11.5px;padding:5px 10px;cursor:pointer;white-space:nowrap}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--plane)}
-.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);padding:8px 11px;font-size:12px;line-height:1.45;z-index:60;box-shadow:0 3px 14px rgba(20,24,28,.2);width:max-content;max-width:400px}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);padding:8px 11px;font-size:12px;line-height:1.45;z-index:60;box-shadow:0 3px 14px rgba(20,24,28,.2);width:max-content;max-width:400px;opacity:0;transition:opacity .1s}
 .tip .t{font-weight:600;margin-bottom:4px;color:var(--ink)}
 .tip .r{display:flex;justify-content:space-between;gap:18px;color:var(--ink-2);align-items:baseline}
 .tip .r>span{min-width:0}
@@ -274,8 +272,8 @@ const pM=d3.timeParse('%Y-%m'),pD=d3.timeParse('%Y-%m-%d'),fM=d3.timeFormat('%b 
 const FONT='"Public Sans",system-ui,sans-serif';
 const el=id=>document.getElementById('plot-'+id),ctl=id=>document.getElementById('ctl-'+id),tvw=id=>document.getElementById('tv-'+id);
 const cap=id=>{const p=document.getElementById('plot-'+id);return p?p.parentElement.querySelector('figcaption'):null;};
-function svgIn(n,W,H){return d3.select(n).append('svg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMinYMin meet')
-  .style('width','100%').style('height','auto').style('display','block').style('font-family',FONT);}
+function svgIn(n,W,H){return d3.select(n).append('svg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet')
+  .style('width','100%').style('height','100%').style('display','block').style('font-family',FONT);}
 function tipFor(n){const h=d3.select(n).style('position','relative'),t=h.append('div').attr('class','tip');
   const scaleNow=()=>{const st=document.getElementById('stage');if(!st)return 1;
     const m=/scale\(([0-9.]+)\)/.exec(st.style.transform||'');return m?parseFloat(m[1]):1;};
