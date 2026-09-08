@@ -21,10 +21,16 @@ b,strong{font-weight:600;color:var(--ink)}
 
 /* ---------- deck chrome, outside the page ---------- */
 #bar{position:fixed;top:0;left:0;height:3px;background:var(--cas);z-index:40;transition:width .18s ease}
-#num,#hint{position:fixed;bottom:12px;font-size:11.5px;color:#8b97a2;z-index:40;letter-spacing:.04em}
-#num{right:20px;font-variant-numeric:tabular-nums}
-#hint{left:20px}
+#num{position:fixed;bottom:12px;right:20px;font-size:11.5px;color:#8b97a2;z-index:40;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+#nav{position:fixed;left:16px;bottom:10px;z-index:41;display:flex;align-items:center;gap:7px}
+#nav button{width:28px;height:26px;border:1px solid #4a555f;background:rgba(255,255,255,.06);color:#c3ccd4;
+  font:inherit;font-size:15px;line-height:1;cursor:pointer;padding:0;border-radius:2px}
+#nav button:hover{background:#c3ccd4;color:#1b2126;border-color:#c3ccd4}
+#nav button:disabled{opacity:.35;cursor:default;background:transparent;color:#6b7681;border-color:#3c464f}
+#fs{font-size:13px}
+#hint{font-size:11.5px;color:#8b97a2;letter-spacing:.04em;margin-left:6px}
 #hint kbd{font:inherit;border:1px solid #4a555f;border-radius:2px;padding:0 5px;margin:0 1px;color:#aab5bf}
+@media print{#nav{display:none}}
 
 /* ---------- slide furniture ---------- */
 .shead{flex:none;margin-bottom:20px}
@@ -138,13 +144,13 @@ figcaption b{color:var(--ink)}
 @media print{
   @page{size:1280px 720px;margin:0}
   html,body{overflow:visible;height:auto;background:#fff}
-  #bar,#hint,#num{display:none}
+  #bar,#nav,#num{display:none}
   #stage{position:static;transform:none!important;width:auto;height:auto}
   .slide{position:relative;inset:auto;display:flex!important;width:1280px;height:720px;
     box-shadow:none;border:0;page-break-after:always;break-after:page}
 }
 </style></head><body>
-<div id="bar"></div><div id="num"></div><div id="hint"><kbd>←</kbd><kbd>→</kbd> move · <kbd>f</kbd> full screen · click to advance</div>
+<div id="bar"></div><div id="num"></div><div id="nav"><button id="prev" type="button" aria-label="Previous slide">&#8249;</button><button id="next" type="button" aria-label="Next slide">&#8250;</button><button id="fs" type="button" aria-label="Full screen" title="Full screen">&#9974;</button><span id="hint">click the deck, then <kbd>&larr;</kbd><kbd>&rarr;</kbd> to move</span></div>
 <div id="stage"><section class="slide title"><div class="mid">
   <p class="eyebrow">BMX5102 Business Analytics · Week 4 in-class assignment</p>
   <h1>Faster, and Later</h1>
@@ -934,11 +940,21 @@ window.CH=CH;
       s.style.width='100%';s.style.height='100%';s.style.display='block';
     });
   }
+  function toggleFS(){
+    try{
+      if(document.fullscreenElement) document.exitFullscreen();
+      else if(document.documentElement.requestFullscreen)
+        document.documentElement.requestFullscreen().catch(()=>{});
+    }catch(e){}
+  }
   function go(n){
     n=Math.max(0,Math.min(S.length-1,n));
     S[i].classList.remove('on'); i=n; S[i].classList.add('on'); render(i);
     bar.style.width=(100*(i+1)/S.length)+'%';
     num.textContent=(i+1)+' / '+S.length;
+    const pv=document.getElementById('prev'), nx=document.getElementById('next');
+    if(pv) pv.disabled = i===0;
+    if(nx) nx.disabled = i===S.length-1;
     if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));
     document.querySelectorAll('.tip').forEach(t=>t.style.opacity=0);
   }
@@ -949,10 +965,10 @@ window.CH=CH;
     else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='p'){e.preventDefault();go(i-1);}
     else if(k==='Home'){e.preventDefault();go(0);}
     else if(k==='End'){e.preventDefault();go(S.length-1);}
-    else if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+    else if(k==='f'){toggleFS();}
   });
   addEventListener('click',e=>{
-    if(e.target.closest('button,a,input,select,.seg,.dtable'))return;
+    if(e.target.closest('button,a,input,select,.seg,.dtable,#nav'))return;
     go(e.clientX < innerWidth*0.28 ? i-1 : i+1);
   });
   let x0=null;
@@ -961,6 +977,23 @@ window.CH=CH;
     if(Math.abs(dx)>50)go(i+(dx<0?1:-1));x0=null;},{passive:true});
   addEventListener('resize',scale);
   addEventListener('beforeprint',()=>S.forEach((s,n)=>render(n)));
+  // in an embedded frame the keyboard only reaches us once we hold focus
+  const holder = document.getElementById('stage');
+  holder.tabIndex = -1;
+  holder.style.outline = 'none';
+  const grab = ()=>{ try{ holder.focus({preventScroll:true}); }catch(e){} };
+  grab();
+  addEventListener('pointerdown', grab, true);
+  addEventListener('focus', grab);
+
+  // buttons, because navigation must not depend on focus at all
+  const prev = document.getElementById('prev'), next = document.getElementById('next'),
+        fsb  = document.getElementById('fs');
+  prev.onclick = e=>{ e.stopPropagation(); go(i-1); grab(); };
+  next.onclick = e=>{ e.stopPropagation(); go(i+1); grab(); };
+  fsb.onclick  = e=>{ e.stopPropagation(); toggleFS(); grab(); };
+  if(!document.fullscreenEnabled){ fsb.hidden = true; }
+
   scale();
   S.forEach(s=>s.classList.remove('on'));
   S[0].classList.add('on');
