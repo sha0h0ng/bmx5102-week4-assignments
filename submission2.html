@@ -630,7 +630,7 @@ function lineChart(node,o){
     .on('mousemove',ev=>{const[mx]=d3.pointer(ev,svg.node());const i=bi(xs,x.invert(mx));const r=data[i];if(!r)return;
       cr.attr('x1',x(xs[i])).attr('x2',x(xs[i])).attr('opacity',1);mk.attr('opacity',1);
       o.series.forEach(s=>mk.select('.m'+s.key.replace(/\W/g,'')).attr('cx',x(xs[i])).attr('cy',r[s.key]!=null?y(r[s.key]):-99));
-      tp.show(rws(o.series.filter(s=>r[s.key]!=null).map(s=>[s.label,(s.fmt||o.yFmt||F.d1)(r[s.key])]).concat(o.tipExtra?o.tipExtra(r):[]),
+      tp.show(rws(o.series.filter(s=>r[s.key]!=null).map(s=>[s.tipLabel||s.label,(s.fmt||o.yFmt||F.d1)(r[s.key])]).concat(o.tipExtra?o.tipExtra(r):[]),
         o.tipTitle?o.tipTitle(r):xt==='month'?fML(xs[i]):xt==='date'?fD(xs[i]):r[xk]),ev);})
     .on('mouseleave',()=>{cr.attr('opacity',0);mk.attr('opacity',0);tp.hide();});
   if(o.legend!==false&&o.series.length>1)keys(o.legendEl||node,o.series.map(s=>({label:s.label,color:s.color})));
@@ -653,7 +653,7 @@ function barChart(node,o){
       let a0,a1;if(st){if(val>=0){a0=pos;a1=pos+val;pos=a1;}else{a0=neg+val;a1=neg;neg=a0;}}else{a0=Math.min(0,val);a1=Math.max(0,val);}
       const p=st?band(String(d[xk])):band(String(d[xk]))+inner(s.key),th=st?band.bandwidth():inner.bandwidth();
       const rect=g.append('rect').attr('fill',col).attr('stroke',C.plane).attr('stroke-width',st?1.5:0)
-        .on('mousemove',ev=>tp.show(rws(ser.filter(z=>d[z.key]!=null).map(z=>[z.label,(z.fmt||fmt)(d[z.key])]).concat(o.tipExtra?o.tipExtra(d):[]),o.tipTitle?o.tipTitle(d):String(d[xk])),ev))
+        .on('mousemove',ev=>tp.show(rws(ser.filter(z=>d[z.key]!=null).map(z=>[z.tipLabel||z.label,(z.fmt||fmt)(d[z.key])]).concat(o.tipExtra?o.tipExtra(d):[]),o.tipTitle?o.tipTitle(d):String(d[xk])),ev))
         .on('mouseleave',()=>tp.hide());
       if(hz)rect.attr('x',v(a0)).attr('y',p).attr('width',Math.max(0,v(a1)-v(a0))).attr('height',th);
       else rect.attr('x',p).attr('y',v(a1)).attr('width',th).attr('height',Math.max(0,v(a0)-v(a1)));
@@ -884,9 +884,9 @@ CH['expected-vs-actual']=id=>{
     evText.push({x:(a0+a1)/2,y:k%2?41.5:44.5,text:e.event,anchor:'middle',color:C.ink3});});
   lineChart(node,{data:d,x:'i',xType:'number',margin:{t:24,r:24,b:38,l:64},height:340,endLabels:false,
     shade:evShade,texts:evText,
-    series:[{key:'promise_median',label:'the expected delivery date Olist gives',color:C.violet,fmt:DAYS},
-            {key:'p90_actual',label:'9 in 10 orders arrive within this',color:C.sub,fmt:DAYS},
-            {key:'median_actual',label:'half of orders arrive within this',color:C.grey,width:1.5,dash:'4 3',fmt:DAYS}],
+    series:[{key:'promise_median',label:'the expected delivery date Olist gives',tipLabel:'expected date',color:C.violet,fmt:DAYS},
+            {key:'p90_actual',label:'9 in 10 orders arrive within this',tipLabel:'9 in 10 orders',color:C.sub,fmt:DAYS},
+            {key:'median_actual',label:'half of orders arrive within this',tipLabel:'median order',color:C.grey,width:1.5,dash:'4 3',fmt:DAYS}],
     xDomain:[-0.5,N-0.5],xTickValues:d3.range(0,N,2),xFmt:lab,yDomain:[0,45],
     yLabel:'days from purchase',legendEl:node,
     annotate:[{x:iOf('2018-03'),key:'p90_actual',text:'the network slows past the date',dy:-14,color:C.cas,bold:true},
@@ -925,8 +925,8 @@ CH['legs']=id=>{
     d3.select(node).selectAll('svg,.legend,.tip,.note').remove();
     const d=P.legs_by_region[reg],sk='seller_'+met,ck='carrier_'+met;
     const {g,band,v}=barChart(node,{data:d,x:'month',mode:'stacked',margin:{t:MT,b:56},series:[
-        {key:sk,label:'Seller handling: purchase to carrier hand-off',color:C.orange,fmt:v=>F.d1(v)+' days'},
-        {key:ck,label:'Carrier transit: hand-off to the customer',color:C.sub,fmt:v=>F.d1(v)+' days'}],
+        {key:sk,label:'Seller handling: purchase to carrier hand-off',tipLabel:'seller handling',color:C.orange,fmt:v=>F.d1(v)+' days'},
+        {key:ck,label:'Carrier transit: hand-off to the customer',tipLabel:'carrier transit',color:C.sub,fmt:v=>F.d1(v)+' days'}],
       yDomain:[0,cap[met]],height:380,rotate:-90,catFmt:v=>fM(pM(v)),
       legendEl:node,yLabel:'days',tipTitle:r=>fML(pM(r.month))+' · '+reg,tipExtra:r=>[['orders',F.i(r.n)]]});
     // the same event calendar as the buffer chart, mapped onto the band scale
@@ -993,8 +993,8 @@ CH['distance']=id=>{
     const {g,x,y,H,m}=lineChart(node,{data:B,x:'i',xType:'number',height:380,margin:{t:22,b:78,l:96,r:44},
       xDomain:[-0.25,B.length-0.75],xTickValues:d3.range(B.length),xFmt:i=>B[i]?B[i].band:'',
       yDomain:[0,42],yFmt:v=>v+'d',yLabel:'days',xLabel:'straight-line distance from seller to customer, km',
-      series:[{key:'promise',label:'the expected delivery date customers are shown',color:C.violet,dots:true,fmt:v=>F.d1(v)+' days'},
-              {key:dk,label:lab,color:C.sub,dots:true,fmt:v=>F.d1(v)+' days'}],
+      series:[{key:'promise',label:'the expected delivery date customers are shown',tipLabel:'expected date',color:C.violet,dots:true,fmt:v=>F.d1(v)+' days'},
+              {key:dk,label:lab,tipLabel:met==='p90'?'9 in 10 orders':'median order',color:C.sub,dots:true,fmt:v=>F.d1(v)+' days'}],
       legendEl:ctl(id),
       tipTitle:r=>r.band+' km',
       tipExtra:r=>[['buffer',(r[bk]>0?'+':'')+F.d1(r[bk])+' days'],['share late',F.p1(r.late)],['orders',F.i(r.orders)]]});
